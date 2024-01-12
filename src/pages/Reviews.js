@@ -2,6 +2,8 @@ import React, { useState, useEffect, useContext } from "react";
 import { HiOutlinePencil, HiTrash  } from "react-icons/hi";
 import AddReviewDetails from "../components/AddReviewDetails";
 import AuthContext from "../context/AuthContext";
+import { TABLE_PAGE_SIZE } from '../util/constants';
+import ReactPaginate from "react-paginate";
 
 const reviewList = [
 	{
@@ -37,12 +39,49 @@ const reviewList = [
 export default function Reviews() {
 	const [showReviewModal, setReviewModal] = useState(false);
 	const [reviews, setAllReviews] = useState([]);
+	const [pageCount, setpageCount] = useState(0);
 
 	const authContext = useContext(AuthContext);
+
+	useEffect(() => {
+		const getReviews = async () => {
+			try {
+				const res = await fetch(
+					window.Configs.backendUrl + `review/get-all-reviews?page=0&limit=${TABLE_PAGE_SIZE}`
+				  );
+				if (res) {
+					const data = await res.json();
+					const reviewList = data?.data?.allReviews;
+					const total = data?.data?.total;
+					setpageCount(Math.ceil(total / TABLE_PAGE_SIZE));
+					setAllReviews(reviewList);
+				}
+			} catch(err) {
+				// handle here
+			}
+		};
+	
+		getReviews();
+	  }, [TABLE_PAGE_SIZE]);
 
 	const addReviewModalSetting = () => {
 		setReviewModal(!showReviewModal);
 	};
+
+	const handlePageClick = async (data) => {
+		let currentPage = data.selected;
+		const reviewsFromServer = await fetchReviews(currentPage);
+		setAllReviews(reviewsFromServer);
+	  };
+
+	  const fetchReviews = async (currentPage) => {
+		const res = await fetch(
+			window.Configs.backendUrl + `review/get-all-reviews?page=${currentPage}&limit=${TABLE_PAGE_SIZE}`
+		);
+		const data = await res.json();
+		const reviewList = data?.data?.allReviews;
+		return reviewList;
+	  };
 
 	return (
 		<div className="bg-white px-4 pt-3 pb-4 rounded-sm border border-gray-200 flex-1">
@@ -105,6 +144,25 @@ export default function Reviews() {
 					</tbody>
 				</table>
 			</div>
+			<ReactPaginate 
+				previousLabel={"previous"}
+				nextLabel={"next"}
+				breakLabel={"..."}
+				pageCount={pageCount}
+				marginPagesDisplayed={2}
+				pageRangeDisplayed={3}
+				onPageChange={handlePageClick}
+				containerClassName={"pagination justify-content-center"}
+				pageClassName={"page-item"}
+				pageLinkClassName={"page-link"}
+				previousClassName={"page-item"}
+				previousLinkClassName={"page-link"}
+				nextClassName={"page-item"}
+				nextLinkClassName={"page-link"}
+				breakClassName={"page-item"}
+				breakLinkClassName={"page-link"}
+				activeClassName={"active"}
+			/>
 		</div>
 	)
 }

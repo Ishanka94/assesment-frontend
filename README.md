@@ -11,7 +11,9 @@
 1. Complete login feature with auth-guard for the routes.
 2. User registration
 3. Dashboard implementation with charts.
-4. Deployment
+4. Pending refactoring
+5. Validations
+5. Deployment
 
 # localhost:3000/login will load the Login page
 

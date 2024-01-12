@@ -23,3 +23,5 @@ export const DASHBOARD_SIDEBAR_BOTTOM_LINKS = [
 		path: '/support',
 	}
 ]
+
+export const TABLE_PAGE_SIZE = 10;
