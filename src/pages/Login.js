@@ -18,19 +18,13 @@ function Login() {
   };
 
   const authCheck = (data) => {
-    setTimeout(() => {
-
-        authContext.signin(data._id, () => {
-            navigate("/");
-        });
-
-    }, 3000);
-
+    authContext.signin(data._id, () => {
+      navigate("/");
+    });
   };
 
   const loginUser = (e) => {
     // Cannot send empty data
-    console.log(window.Configs.prop1);
     if (form.email === "" || form.password === "") {
       alert("To login user, enter details to proceed...");
     } else {
